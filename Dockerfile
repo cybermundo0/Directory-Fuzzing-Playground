@@ -1,19 +1,28 @@
-FROM python:3.8
+# Use an official Python runtime as the base image
+FROM python:3.8-slim
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install the required packages
+# Create a new user "appuser" and set it as the current user
+RUN useradd -m appuser
+USER appuser
+
+# Install the required packages as root
+USER root
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create necessary directories in the image
-RUN mkdir -p /app/created_directories/directories
+# Switch back to appuser
+USER appuser
 
-# Copy the content of the local src directory to the working directory
-COPY . .
+# Make port 5000 available to the outside world
+EXPOSE 5000
 
-# Specify the command to run on container start
-CMD [ "python", "./app.py" ]
+# Define the environment in production mode
+ENV FLASK_ENV=production
+
+# Run the app when the container starts
+CMD ["python", "./app.py"]
