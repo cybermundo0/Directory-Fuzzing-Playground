@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Directories</title>
+</head>
+<body>
+    <h1>Directories</h1>
+    <ul>
+    {% for dir in dirs %}
+        <li><a href="{{ url_for('directory_page', dirname=dir) }}">{{ dir }}</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
