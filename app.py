@@ -3,50 +3,75 @@ import os
 import threading
 import time
 import random
-import markdown
 
 app = Flask(__name__)
 
-BASE_DIR = '/app/created_directories/directories'
-MAX_DIRECTORIES = 100
-WORD_LIST_FILE = 'top_directories.txt'
+# Path to the directory where directories will be created
+BASE_DIR = '/app/created_directories'
+# File that contains a list of directory names
+WORD_LIST = 'top_directories.txt'
 
 @app.route('/')
 def index():
-    with open("README.md", "r") as readme_file:
-        content = readme_file.read()
-        content_html = markdown.markdown(content)
-    return content_html
+    """
+    Render the README as the homepage of the application.
+    """
+    with open("README.md", "r") as f:
+        content = f.read()
+    return render_template('index.html', content=content)
 
 def create_initial_directories():
-    if not os.path.exists(BASE_DIR):
-        os.makedirs(BASE_DIR)
+    """
+    Create the initial 30 directories inside the BASE_DIR.
 
-    for _ in range(30):
-        dir_name = str(random.randint(1, 1000))
-        os.makedirs(os.path.join(BASE_DIR, dir_name))
+    This function is called once when the app starts to setup 
+    the directory environment.
+    """
+    # Check if the word list exists
+    if not os.path.exists(WORD_LIST):
+        raise FileNotFoundError(f"Word list '{WORD_LIST}' not found.")
+    
+    # Read directory names from the word list
+    with open(WORD_LIST, 'r') as file:
+        lines = file.readlines()
+        directory_names = random.sample(lines, 30)
+    
+    # Create each directory from the list
+    for directory in directory_names:
+        os.makedirs(os.path.join(BASE_DIR, directory.strip()), exist_ok=True)
 
-def create_directories():
+def periodic_directory_creation():
+    """
+    Periodically create a new directory every 30 minutes.
+
+    Stop creating new directories after a total of 100 directories
+    have been created. This function is run in a separate thread.
+    """
     while True:
-        if not os.path.exists(BASE_DIR):
-            os.makedirs(BASE_DIR)
-
+        # Sleep for 30 minutes
+        time.sleep(1800)
+        
+        # Get the number of existing directories
         existing_dirs = len(os.listdir(BASE_DIR))
-        if existing_dirs >= MAX_DIRECTORIES:
+        
+        # If there are 100 directories, stop creating more
+        if existing_dirs >= 100:
             break
 
-        with open(WORD_LIST_FILE, 'r') as f:
-            lines = f.readlines()
-            new_dir = random.choice(lines).strip()
-            os.makedirs(os.path.join(BASE_DIR, new_dir))
+        # Select a random directory name from the word list
+        with open(WORD_LIST, 'r') as file:
+            directory_name = random.choice(file.readlines()).strip()
+        
+        # Create the directory
+        os.makedirs(os.path.join(BASE_DIR, directory_name), exist_ok=True)
 
-        time.sleep(1800)  # Wait for 30 minutes
+# When the app starts, setup the directory environment
+if not os.path.exists(BASE_DIR):
+    os.makedirs(BASE_DIR)
+create_initial_directories()
 
-@app.route('/<path:directory>')
-def show_directory(directory):
-    return render_template('directory.html', directory_name=directory)
+# Start the periodic directory creation in a separate thread
+threading.Thread(target=periodic_directory_creation).start()
 
-if __name__ == "__main__":
-    threading.Thread(target=create_directories).start()
-    create_initial_directories()
-    app.run(debug=True,host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000)
