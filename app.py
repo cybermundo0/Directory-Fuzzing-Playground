@@ -3,54 +3,50 @@ import os
 import threading
 import time
 import random
+import markdown
 
 app = Flask(__name__)
 
-# Base directory where we want to create the folders
-BASE_DIR = os.path.join(os.getcwd(), "created_directories", "directories")
+BASE_DIR = '/app/created_directories/directories'
+MAX_DIRECTORIES = 100
+WORD_LIST_FILE = 'top_directories.txt'
 
 @app.route('/')
 def index():
-    dirs = os.listdir(BASE_DIR)
-    return render_template('index.html', dirs=dirs)
+    with open("README.md", "r") as readme_file:
+        content = readme_file.read()
+        content_html = markdown.markdown(content)
+    return content_html
 
-@app.route('/directory/<dirname>')
-def directory_page(dirname):
-    return render_template('directory.html', dirname=dirname)
-
-def get_random_word():
-    with open('top_directories.txt', 'r') as file:
-        words = file.readlines()
-    return random.choice(words).strip()
-
-def create_directory(name):
+def create_initial_directories():
     if not os.path.exists(BASE_DIR):
-        os.makedirs(BASE_DIR)  # Use makedirs to create any missing intermediate directories
-    path = os.path.join(BASE_DIR, name)
-    if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(BASE_DIR)
+
+    for _ in range(30):
+        dir_name = str(random.randint(1, 1000))
+        os.makedirs(os.path.join(BASE_DIR, dir_name))
 
 def create_directories():
-    existing_dirs = len(os.listdir(BASE_DIR))
-    max_directories = 100
+    while True:
+        if not os.path.exists(BASE_DIR):
+            os.makedirs(BASE_DIR)
 
-    # Create up to 30 directories initially if none exist
-    for i in range(existing_dirs, existing_dirs + 30):
-        if i >= max_directories:
-            return
-        create_directory(f"dir_{i}")
+        existing_dirs = len(os.listdir(BASE_DIR))
+        if existing_dirs >= MAX_DIRECTORIES:
+            break
 
-    i = existing_dirs + 30
+        with open(WORD_LIST_FILE, 'r') as f:
+            lines = f.readlines()
+            new_dir = random.choice(lines).strip()
+            os.makedirs(os.path.join(BASE_DIR, new_dir))
 
-    # Continue creating new directories every 30 minutes using a random word until we reach the maximum
-    while i < max_directories:
-        time.sleep(1800)  # 1800 seconds is 30 minutes
-        create_directory(get_random_word())
-        i += 1
+        time.sleep(1800)  # Wait for 30 minutes
 
-# Running the create_directories function in a background thread
-t = threading.Thread(target=create_directories)
-t.start()
+@app.route('/<path:directory>')
+def show_directory(directory):
+    return render_template('directory.html', directory_name=directory)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    threading.Thread(target=create_directories).start()
+    create_initial_directories()
+    app.run(debug=True,host='0.0.0.0', port=5000)
