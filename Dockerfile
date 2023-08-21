@@ -15,12 +15,11 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 # Switching to a non-root user
-RUN useradd -m appuser \
-    && chown -R appuser:appuser /app
+RUN useradd -m appuser
 USER appuser
 
 # Copy the current directory contents into the container at /app
-COPY . .
+COPY --chown=appuser:appuser . .
 
 # Run app.py when the container launches
 CMD ["python", "./app.py"]
