@@ -27,22 +27,26 @@ Feel free to add or modify any part of this description to make it more aligned 
 ## Directory Structure
 
 ```
-/my_flask_app/
+Directory-Fuzzing-Playground/
 │
-├── app.py                     # Main Flask app
+├── app/
+│   ├── created_directories/  # This directory will get populated with new directories over time.
+│   │
+│   ├── static/
+│   │   └── css/
+│   │       └── styles.css    # Optional, in case you want to include some custom styles.
+│   │
+│   ├── templates/
+│   │   └── index.html        # The template for the main directory page.
+│   │
+│   ├── app.py                # Main Flask application file.
+│   │
+│   └── top_directories.txt   # Contains the list of directory names.
 │
-├── top_directories.txt        # Word list for directory names
+├── Dockerfile
 │
-├── Dockerfile                 # Docker configuration file
-│
-├── requirements.txt           # Python dependencies
-│
-├── created_directories/       # (This will be created once the Flask app starts)
-│   └── directories/           # (This will be where new directories are created)
-│
-└── templates/                 # HTML templates
-    ├── index.html
-    └── directory.html
+└── requirements.txt          # Contains all the Python package dependencies.
+
 ```
 
 ## Building and Running the Docker Container
