@@ -15,7 +15,7 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 # Switching to a non-root user
-RUN useradd -m appuser
+RUN useradd -m appuser && mkdir -p /app/created_directories && chown -R appuser:appuser /app
 USER appuser
 
 # Copy the current directory contents into the container at /app
