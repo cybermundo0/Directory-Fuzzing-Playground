@@ -14,17 +14,28 @@ WORD_LIST = 'top_directories.txt'
 @app.route('/')
 def index():
     """
-    Render the README as the homepage of the application.
+    Display the list of directories.
     """
-    with open("README.md", "r") as f:
-        content = f.read()
-    return render_template('index.html', content=content)
+    dirs = os.listdir(BASE_DIR)
+    return render_template('index.html', dirs=dirs)
+
+@app.route('/<dirname>')
+def directory_page(dirname):
+    """
+    Serve a static page for the specified directory.
+    """
+    # Check if the directory exists
+    dir_path = os.path.join(BASE_DIR, dirname)
+    if os.path.exists(dir_path):
+        return f"Welcome to the static page for {dirname}!"
+    else:
+        return "Directory not found.", 404
 
 def create_initial_directories():
     """
     Create the initial 30 directories inside the BASE_DIR.
 
-    This function is called once when the app starts to setup 
+    This function is called once when the app starts to set up 
     the directory environment.
     """
     # Check if the word list exists
