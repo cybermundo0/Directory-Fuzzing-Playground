@@ -9,7 +9,7 @@ app = Flask(__name__)
 # Path to the directory where directories will be created
 BASE_DIR = '/app/created_directories'
 # File that contains a list of directory names
-WORD_LIST = '/app/top_directories.txt'
+WORD_LIST = 'top_directories.txt'
 
 
 # Serve the main page that provides the context about the app.
