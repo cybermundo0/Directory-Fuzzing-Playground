@@ -5,7 +5,7 @@ FROM python:3.8-slim-bullseye
 ENV PYTHONUNBUFFERED 1
 
 # Set the working directory in the container
-WORKDIR /app/app
+WORKDIR /app
 
 # Copy the requirements file into the container
 COPY requirements.txt .
