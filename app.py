@@ -12,12 +12,13 @@ BASE_DIR = '/app/created_directories'
 WORD_LIST = 'top_directories.txt'
 
 @app.route('/')
-def index():
-    """
-    Display the list of directories.
-    """
-    dirs = os.listdir(BASE_DIR)
-    return render_template('index.html', dirs=dirs)
+def main_page():
+    return render_template('index.html')
+
+@app.route('/hidden/')
+def hidden_directories():
+    directories = os.listdir(BASE_DIR)
+    return render_template('directories.html', directories=directories)
 
 @app.route('/<dirname>')
 def directory_page(dirname):
