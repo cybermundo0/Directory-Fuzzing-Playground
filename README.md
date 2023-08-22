@@ -76,7 +76,7 @@ Directory-Fuzzing-Playground/
    Start a Docker container from the `myflaskapp:latest` image:
 
    ```bash
-   docker run -p 5000:5000 myflaskapp:latest
+   docker run -p 5001:5001 myflaskapp:latest
    ```
 
    You can then access the Flask app at `http://localhost:5000` on your local machine's web browser.
