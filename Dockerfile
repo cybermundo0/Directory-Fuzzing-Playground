@@ -18,7 +18,7 @@ RUN useradd -m appuser && mkdir -p /app/created_directories && chown -R appuser:
 USER appuser
 
 # Copy the current directory contents into the container at /app
-COPY --chown=appuser:appuser . .
+COPY --chown=appuser:appuser . /app
 
 # Run app.py when the container launches
 CMD ["gunicorn", "app.app:app", "-b", "0.0.0.0:5001"]
