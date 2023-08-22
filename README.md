@@ -30,23 +30,19 @@ Feel free to add or modify any part of this description to make it more aligned 
 Directory-Fuzzing-Playground/
 │
 ├── app/
-│   ├── created_directories/  # This directory will get populated with new directories over time.
-│   │
-│   ├── static/
-│   │   └── css/
-│   │       └── styles.css    # Optional, in case you want to include some custom styles.
+│   ├── created_directories/      # This directory will get populated with new directories over time.
 │   │
 │   ├── templates/
-│   │   └── index.html        # The template for the main directory page.
+│   │   ├── index.html            # The template for the main directory page.
+│   │   └── directories.html      # The template to display the list of created directories.
 │   │
-│   ├── app.py                # Main Flask application file.
+│   ├── app.py                    # Main Flask application file.
 │   │
-│   └── top_directories.txt   # Contains the list of directory names.
+│   └── top_directories.txt       # Contains the list of directory names.
 │
-├── Dockerfile
+├── Dockerfile                    # Docker configuration and build instructions.
 │
-└── requirements.txt          # Contains all the Python package dependencies.
-
+└── requirements.txt              # Contains all the Python package dependencies.
 ```
 
 ## Building and Running the Docker Container
