@@ -1,24 +1,20 @@
 # Use an official Python runtime as the parent image
 FROM python:3.8-slim-bullseye
 
-# Set environment variables
-ENV PYTHONUNBUFFERED 1
-
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+# Copy your code
+COPY . /app
 
-# Install any needed packages specified in requirements.txt
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Switching to a non-root user
-RUN useradd -m appuser && mkdir -p /app/created_directories && chown -R appuser:appuser /app
-USER appuser
+# Adjust permissions for /app and its subdirectories
+RUN chown -R nobody:nogroup /app
 
-# Copy the current directory contents into the container at /app
-COPY --chown=appuser:appuser . /app
+# Expose the port your app runs on
+EXPOSE 5001
 
-# Run app.py when the container launches
-CMD ["gunicorn", "app.app:app", "-b", "0.0.0.0:5001"]
+# Run gunicorn or your preferred server as root
+CMD ["gunicorn", "app.app:app", "--bind", "0.0.0.0:5001", "--user", "nobody"]
