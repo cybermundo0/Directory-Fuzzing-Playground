@@ -21,4 +21,4 @@ USER appuser
 COPY --chown=appuser:appuser . .
 
 # Run app.py when the container launches
-CMD ["python", "./app.py"]
+CMD ["gunicorn", "app:app", "-b", "0.0.0.0:5001"]
